@@ -28,15 +28,6 @@ Práctica de la asignatura **Sistemas Distribuidos**: un descargador de imágene
 
 ## Cómo ejecutarlo
 
-### En local (sin Docker)
-
-```bash
-make compile    # compila a out/classes
-make run-local  # compila (si hace falta) y ejecuta
-```
-
-### En contenedor
-
 ```bash
 make up    # construye y levanta el contenedor
 make logs  # logs del servicio
