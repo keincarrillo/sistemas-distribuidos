@@ -1,4 +1,4 @@
-# Chadwick-sitemas-distribuidos
+# sitemas-distribuidos
 
 Repositorio de prácticas de la asignatura **Sistemas Distribuidos**.
 
