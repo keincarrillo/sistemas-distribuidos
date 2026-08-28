@@ -1,0 +1,9 @@
+# Directorios y artefactos locales que no deben entrar en la imagen
+.git
+.idea
+out
+*.iml
+.gitignore
+compose.yaml
+Dockerfile
+Makefile

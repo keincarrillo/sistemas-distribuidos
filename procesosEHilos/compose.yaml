@@ -1,0 +1,9 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: procesos-e-hilos:latest
+    container_name: procesos-e-hilos
+
+    restart: "no"
