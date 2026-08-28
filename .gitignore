@@ -1,3 +1,12 @@
+# ============================================================
+#  .gitignore global del repositorio (raíz del workspace)
+#  Aplica a todos los proyectos/subcarpetas. Consolidado de:
+#  - template Java (raíz)
+#  - template IntelliJ IDEA + Eclipse + NetBeans + VS Code + Mac
+#    (antes en procesosEHilos/.gitignore, ahora unificado aquí)
+# ============================================================
+
+### Java ###
 # Compiled class file
 *.class
 
@@ -22,3 +31,40 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+### IntelliJ IDEA ###
+.idea/
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+*.iml
+.kotlin
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
+
+### Proyecto ###
+# Imágenes descargadas por el programa (se regeneran en cada ejecución)
+descargas/
