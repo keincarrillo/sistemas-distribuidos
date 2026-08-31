@@ -1,25 +1,38 @@
-# procesosEHilos — Descargador de imágenes con hilos
+# procesosEHilos — Tienda en línea concurrente
 
-Práctica de la asignatura **Sistemas Distribuidos**: un descargador de imágenes en Java que las obtiene en paralelo usando un pool de hilos fijo.
+Práctica de la asignatura **Sistemas Distribuidos**: una tienda en línea en Java donde clientes generan pedidos y workers los procesan en paralelo usando hilos, sincronización (lock/condition y semáforo) y un proceso de monitor separado del proceso principal.
 
 ## De qué trata
 
-- Descarga un conjunto de imágenes desde [picsum.photos](https://picsum.photos) usando el cliente HTTP estándar de Java (`java.net.http`).
-- Lanza un hilo por imagen sobre un `ExecutorService` con un límite máximo de hilos concurrentes (`DescargadorService`).
-- Recoge los resultados conforme terminan y muestra un resumen: `exitosas/total descargadas en X ms`.
-- Requiere **Java 25+**: usa *implicit main* (`void main()`), sintaxis que pasó a ser definitiva en Java 25 (en versiones anteriores era preview).
+- **Hilos productores**: `Cliente` genera pedidos aleatorios y los encola (patrón productor-consumidor).
+- **Hilos consumidores**: `Worker` toma pedidos de la cola, usa un almacén compartido y los completa.
+- **Cola acotada**: buffer circular con `ReentrantLock` + `Condition` que bloquea a los hilos cuando la cola está llena o vacía.
+- **Recurso compartido**: `Almacen` con `Semaphore` justo (capacidad 2) que limita cuántos workers acceden a la vez.
+- **Proceso separado**: `Monitor` se lanza como proceso del sistema operativo independiente vía `ProcessBuilder`, muestra su PID y permanece activo mientras dura la simulación; el proceso principal lo termina al finalizar.
+- Requiere **Java 25+** (el `Dockerfile` usa Eclipse Temurin 25).
 
 ## Estructura
 
 | Ruta | Descripción |
 | --- | --- |
-| `src/Main.java` | Punto de entrada: define la lista de imágenes y lanza la descarga |
-| `src/model/ImagenDescarga.java` | Modelo: URL y nombre de archivo |
-| `src/service/DescargadorService.java` | Pool de hilos y coordinación de las descargas |
-| `src/util/HttpUtil.java` | Cliente HTTP y escritura a disco |
+| `src/Main.java` | Punto de entrada: invoca `Tienda.ejecutar()` |
+| `src/Tienda.java` | Orquestador: crea cola y almacén, lanza el proceso monitor, arranca los hilos, espera su fin y cierra todo |
+| `src/hilo/Cliente.java` | Hilo productor: genera pedidos y los encola |
+| `src/hilo/Worker.java` | Hilo consumidor: toma pedidos de la cola, usa el almacén y los completa |
+| `src/cola/ColaPedidos.java` | Cola acotada productor-consumidor con `Lock` + `Condition` |
+| `src/recurso/Almacen.java` | Recurso compartido con `Semaphore` justo de capacidad 2 |
+| `src/model/Pedido.java` | Modelo de datos: id, producto y timestamp |
+| `src/proceso/Monitor.java` | Proceso OS separado lanzado con `ProcessBuilder` |
 | `Dockerfile` | Imagen multi-etapa (JDK 25 compila, JRE 25 ejecuta) |
 | `compose.yaml` | Servicio `app` del contenedor |
 | `Makefile` | Automatiza build, ejecución y contenedor |
+
+## Conceptos que cubre
+
+- Concurrencia con hilos Java (`Thread`, `join`).
+- Patrón productor-consumidor con cola acotada (`Lock` + `Condition`).
+- Exclusión mutua con semáforo (`Semaphore` justo) sobre un recurso compartido.
+- Comunicación entre procesos: lanzar y terminar un proceso externo (`ProcessBuilder`, `ProcessHandle`).
 
 ## Requisitos
 
@@ -27,6 +40,17 @@ Práctica de la asignatura **Sistemas Distribuidos**: un descargador de imágene
 - Docker + Docker Compose para el contenedor (opcional).
 
 ## Cómo ejecutarlo
+
+En local:
+
+```bash
+javac --release 25 -d out $(find src -name '*.java')
+java -cp out Main
+```
+
+> El monitor se lanza con el classpath `out/`, así que hay que compilar antes de ejecutar.
+
+Con Docker:
 
 ```bash
 make up    # construye y levanta el contenedor
@@ -41,16 +65,35 @@ Todos los targets disponibles se ven con `make` (o `make help`).
 ## Salida esperada
 
 ```
-200 img1.jpg
-200 img2.jpg
-200 img3.jpg
-200 img4.jpg
+=== TIENDA EN LINEA CONCURRENTE ===
 
-4/4 descargadas en 604 ms
+[Main] Monitor PID: 19217
+
+  [Cliente-1] crea pedido#1 (Teclado)
+  [Worker-2] procesa pedido#1 (Teclado)
+  [Cliente-2] crea pedido#2 (Teclado)
+  [Worker-1] procesa pedido#2 (Teclado)
+  [Worker-1] entra a Almacen (0/2)
+  [Worker-2] entra a Almacen (1/2)
+╔══════════════════════════════════════╗
+║  MONITOR - PID: 19217               ║
+║  Proceso OS separado activo         ║
+╚══════════════════════════════════════╝
+  ...
+  [Cliente-2] termino
+  [Worker-1] termino, proceso 5 pedidos
+  [Worker-2] termino, proceso 5 pedidos
+
+=== FIN ===
+Hilos: 2 clientes + 2 workers
+Proceso separado: monitor
+Sync: Lock+Conditions (cola), Semaphore (almacen)
 ```
+
+La salida exacta varía en cada ejecución por el interleaving de los hilos (los productos y el orden de los pedidos son aleatorios).
 
 ## Notas
 
-- El programa descarga y termina (no es un servidor): el contenedor queda en estado `Exited (0)`.
-- Las imágenes descargadas en el contenedor **viven solo dentro de él** (no hay volúmenes montados) y se pierden con `docker compose down`.
-- Al ejecutar en local, las imágenes se guardan en `descargas/` (carpeta gitignoreada).
+- El programa termina solo: los clientes crean un número fijo de pedidos, la cola se cierra y los workers salen al quedarse vacía.
+- El monitor es un proceso OS independiente (no un hilo): se ve con `ps` mientras la simulación corre y se termina con `destroyForcibly()` al final.
+- En el contenedor, la ejecución termina y queda en estado `Exited (0)` (no es un servidor).
