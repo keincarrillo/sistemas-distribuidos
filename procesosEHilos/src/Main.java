@@ -1,14 +1,26 @@
-import model.ImagenDescarga;
-import service.DescargadorService;
+import restaurante.RestauranteMain;
 
-void main() throws InterruptedException {
-    List<ImagenDescarga> imagenes = List.of(
-            new ImagenDescarga("https://picsum.photos/id/10/400/300", "img1.jpg"),
-            new ImagenDescarga("https://picsum.photos/id/20/400/300", "img2.jpg"),
-            new ImagenDescarga("https://picsum.photos/id/30/400/300", "img3.jpg"),
-            new ImagenDescarga("https://picsum.photos/id/40/400/300", "img4.jpg")
-    );
+import java.util.Scanner;
 
-    DescargadorService servicio = new DescargadorService(4);
-    servicio.descargarTodas(imagenes);
+void main() throws Exception {
+    System.out.println();
+    System.out.println("========================================");
+    System.out.println("  SISTEMAS DISTRIBUIDOS - PRACTICA");
+    System.out.println("========================================");
+    System.out.println();
+    System.out.println("  1. Simulador de cocina concurrente");
+    System.out.println("     (hilos + procesos + semaforos)");
+    System.out.println();
+    System.out.print("  Elige opcion [1]: ");
+
+    Scanner sc = new Scanner(System.in);
+    String opcion = sc.nextLine().trim();
+
+    switch (opcion) {
+        case "1" -> {
+            System.out.println();
+            RestauranteMain.main(new String[]{});
+        }
+        default -> System.out.println("  Opcion invalida");
+    }
 }
