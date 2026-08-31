@@ -1,122 +1,76 @@
+import cola.ColaPedidos;
+import hilo.Cliente;
+import hilo.Worker;
+import recurso.Almacen;
+
+import java.io.PrintWriter;
 import java.util.concurrent.*;
-import java.util.concurrent.locks.*;
 
-// Productor-Consumidor con buffer acotado + semaforo + proceso separado
 public class Main {
+    private static final int CLIENTES = 2;
+    private static final int WORKERS = 2;
+    private static final int CAPACIDAD_COLA = 5;
+    private static final int CAPACIDAD_ALMACEN = 2;
 
-    // === BUFFER ACOTADO (sincronizado con Lock + Conditions) ===
-    static class Buffer {
-        private final int[] buf = new int[4];
-        private int count, in, out;
-        private final ReentrantLock lock = new ReentrantLock();
-        private final Condition lleno = lock.newCondition();
-        private final Condition vacio = lock.newCondition();
-
-        void put(int val) throws InterruptedException {
-            lock.lock();
-            try {
-                while (count == buf.length) lleno.await();
-                buf[in] = val;
-                in = (in + 1) % buf.length;
-                count++;
-                System.out.println("  [Buffer] put " + val + " (" + count + "/" + buf.length + ")");
-                vacio.signalAll();
-            } finally { lock.unlock(); }
-        }
-
-        int take() throws InterruptedException {
-            lock.lock();
-            try {
-                while (count == 0) vacio.await();
-                int val = buf[out];
-                out = (out + 1) % buf.length;
-                count--;
-                System.out.println("  [Buffer] take " + val + " (" + count + "/" + buf.length + ")");
-                lleno.signalAll();
-                return val;
-            } finally { lock.unlock(); }
-        }
-    }
-
-    // === SEMAFORO: recurso compartido (impresora con 1 cola) ===
-    static class Impresora {
-        private final Semaphore sem = new Semaphore(1, true);
-
-        void imprimir(String hilo, int dato) throws InterruptedException {
-            sem.acquire();
-            try {
-                System.out.println("  [" + hilo + "] imprime " + dato);
-                Thread.sleep(600);
-            } finally { sem.release(); }
-        }
-    }
-
-    // === PRODUCTOR (hilo) ===
-    static class Productor extends Thread {
-        private final Buffer buf;
-        Productor(Buffer b) { buf = b; }
-
-        public void run() {
-            try {
-                for (int i = 1; i <= 8; i++) {
-                    buf.put(i);
-                    Thread.sleep(200);
-                }
-            } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
-        }
-    }
-
-    // === CONSUMIDOR (hilo) ===
-    static class Consumidor extends Thread {
-        private final Buffer buf;
-        private final Impresora imp;
-        Consumidor(Buffer b, Impresora i) { buf = b; imp = i; }
-
-        public void run() {
-            try {
-                for (int i = 0; i < 8; i++) {
-                    int v = buf.take();
-                    imp.imprimir(getName(), v);
-                }
-            } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
-        }
-    }
-
-    // === MAIN ===
     public static void main(String[] args) throws Exception {
-        System.out.println("=== SISTEMA CONCURRENTE ===\n");
+        System.out.println("=== TIENDA EN LINEA CONCURRENTE ===\n");
 
-        Buffer buf = new Buffer();
-        Impresora imp = new Impresora();
+        ColaPedidos cola = new ColaPedidos(CAPACIDAD_COLA);
+        Almacen almacen = new Almacen("Almacen", CAPACIDAD_ALMACEN);
 
-        // 1) Lanzar proceso monitor separado (ProcessBuilder)
+        // Lanzar proceso monitor
         Process monitor = null;
         try {
             String java = ProcessHandle.current().info().command().orElse("java");
-            ProcessBuilder pb = new ProcessBuilder(java, "-cp", "out", "Monitor");
+            ProcessBuilder pb = new ProcessBuilder(
+                    java, "-cp", "out", "proceso.Monitor", "/tmp/stats.txt");
             pb.inheritIO();
             monitor = pb.start();
-            System.out.println("[Main] Monitor PID: " + monitor.pid());
+            System.out.printf("[Main] Monitor PID: %d%n", monitor.pid());
         } catch (Exception e) {
             System.out.println("[Main] Monitor no disponible");
         }
 
-        // 2) Lanzar hilos productor y consumidor
-        Productor p = new Productor(buf);
-        Consumidor c = new Consumidor(buf, imp);
-        p.start();
-        c.start();
+        // Hilo que escribe stats para el monitor
+        ScheduledExecutorService stats = Executors.newSingleThreadScheduledExecutor();
+        stats.scheduleAtFixedRate(() -> {
+            try (PrintWriter pw = new PrintWriter("/tmp/stats.txt")) {
+                // formato: creados|procesados|enCola|enAlmacen
+                pw.printf("%d|%d|%d|%d%n",
+                        Cliente.getContadorPedidos(),
+                        Worker.getProcesados(),
+                        cola.getCantidad(),
+                        CAPACIDAD_ALMACEN - almacen.getDisponibles());
+            } catch (Exception ignored) {}
+        }, 500, 500, TimeUnit.MILLISECONDS);
 
-        // 3) Esperar a que terminen
-        p.join();
-        c.join();
+        // Lanzar hilos
+        Cliente[] clientes = new Cliente[CLIENTES];
+        Worker[] workers = new Worker[WORKERS];
 
-        // 4) Cerrar monitor
+        for (int i = 0; i < CLIENTES; i++) {
+            clientes[i] = new Cliente("Cliente-" + (i + 1), cola);
+        }
+        for (int i = 0; i < WORKERS; i++) {
+            workers[i] = new Worker("Worker-" + (i + 1), cola, almacen);
+        }
+
+        System.out.println();
+        for (Cliente c : clientes) c.start();
+        for (Worker w : workers) w.start();
+
+        // Esperar a que terminen
+        for (Cliente c : clientes) c.join();
+        cola.cerrar();
+        for (Worker w : workers) w.join();
+
+        // Limpiar
+        stats.shutdown();
         if (monitor != null) monitor.destroyForcibly();
 
         System.out.println("\n=== FIN ===");
-        System.out.println("Hilos: productor + consumidor");
-        System.out.println("Procesos: principal + monitor");
-        System.out.println("Sync: Lock+Conditions (buffer), Semaphore (impresora)");
+        System.out.printf("Hilos: %d clientes + %d workers%n", CLIENTES, WORKERS);
+        System.out.printf("Proceso separado: monitor%n");
+        System.out.printf("Sync: Lock+Conditions (cola), Semaphore (almacen)%n");
     }
 }
