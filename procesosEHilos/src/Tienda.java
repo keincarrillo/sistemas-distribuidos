@@ -4,15 +4,12 @@ import hilo.Worker;
 import recurso.Almacen;
 
 import java.io.File;
-import java.io.PrintWriter;
-import java.util.concurrent.*;
 
 public class Tienda {
     private static final int CLIENTES = 2;
     private static final int WORKERS = 2;
     private static final int CAPACIDAD_COLA = 5;
     private static final int CAPACIDAD_ALMACEN = 2;
-    private static final String STATS_FILE = "/tmp/stats.txt";
 
     public static void ejecutar() {
         System.out.println("=== TIENDA EN LINEA CONCURRENTE ===\n");
@@ -20,31 +17,19 @@ public class Tienda {
         ColaPedidos cola = new ColaPedidos(CAPACIDAD_COLA);
         Almacen almacen = new Almacen("Almacen", CAPACIDAD_ALMACEN);
 
-        // Lanzar proceso monitor (clase separada via ProcessBuilder)
+        // Lanzar proceso monitor (proceso OS separado via ProcessBuilder)
         Process monitor = null;
         try {
             String java = ProcessHandle.current().info().command().orElse("java");
             String classpath = System.getProperty("user.dir") + File.separator + "out";
             ProcessBuilder pb = new ProcessBuilder(
-                    java, "-cp", classpath, "proceso.Monitor", STATS_FILE);
+                    java, "-cp", classpath, "proceso.Monitor");
             pb.inheritIO();
             monitor = pb.start();
             System.out.printf("[Main] Monitor PID: %d%n", monitor.pid());
         } catch (Exception e) {
             System.out.println("[Main] Monitor no disponible: " + e.getMessage());
         }
-
-        // Hilo que escribe stats para el monitor
-        ScheduledExecutorService stats = Executors.newSingleThreadScheduledExecutor();
-        stats.scheduleAtFixedRate(() -> {
-            try (PrintWriter pw = new PrintWriter(STATS_FILE)) {
-                pw.printf("%d|%d|%d|%d%n",
-                        Cliente.getContadorPedidos(),
-                        Worker.getProcesados(),
-                        cola.getCantidad(),
-                        CAPACIDAD_ALMACEN - almacen.getDisponibles());
-            } catch (Exception ignored) {}
-        }, 500, 500, TimeUnit.MILLISECONDS);
 
         // Lanzar hilos
         Cliente[] clientes = new Cliente[CLIENTES];
@@ -70,8 +55,7 @@ public class Tienda {
             Thread.currentThread().interrupt();
         }
 
-        // Limpiar
-        stats.shutdown();
+        // Cerrar monitor
         if (monitor != null) monitor.destroyForcibly();
 
         System.out.println("\n=== FIN ===");
