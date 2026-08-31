@@ -3,39 +3,41 @@ import hilo.Cliente;
 import hilo.Worker;
 import recurso.Almacen;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.util.concurrent.*;
 
-public class Main {
+public class Tienda {
     private static final int CLIENTES = 2;
     private static final int WORKERS = 2;
     private static final int CAPACIDAD_COLA = 5;
     private static final int CAPACIDAD_ALMACEN = 2;
+    private static final String STATS_FILE = "/tmp/stats.txt";
 
-    public static void main(String[] args) throws Exception {
+    public static void ejecutar() {
         System.out.println("=== TIENDA EN LINEA CONCURRENTE ===\n");
 
         ColaPedidos cola = new ColaPedidos(CAPACIDAD_COLA);
         Almacen almacen = new Almacen("Almacen", CAPACIDAD_ALMACEN);
 
-        // Lanzar proceso monitor
+        // Lanzar proceso monitor (clase separada via ProcessBuilder)
         Process monitor = null;
         try {
             String java = ProcessHandle.current().info().command().orElse("java");
+            String classpath = System.getProperty("user.dir") + File.separator + "out";
             ProcessBuilder pb = new ProcessBuilder(
-                    java, "-cp", "out", "proceso.Monitor", "/tmp/stats.txt");
+                    java, "-cp", classpath, "proceso.Monitor", STATS_FILE);
             pb.inheritIO();
             monitor = pb.start();
             System.out.printf("[Main] Monitor PID: %d%n", monitor.pid());
         } catch (Exception e) {
-            System.out.println("[Main] Monitor no disponible");
+            System.out.println("[Main] Monitor no disponible: " + e.getMessage());
         }
 
         // Hilo que escribe stats para el monitor
         ScheduledExecutorService stats = Executors.newSingleThreadScheduledExecutor();
         stats.scheduleAtFixedRate(() -> {
-            try (PrintWriter pw = new PrintWriter("/tmp/stats.txt")) {
-                // formato: creados|procesados|enCola|enAlmacen
+            try (PrintWriter pw = new PrintWriter(STATS_FILE)) {
                 pw.printf("%d|%d|%d|%d%n",
                         Cliente.getContadorPedidos(),
                         Worker.getProcesados(),
@@ -60,9 +62,13 @@ public class Main {
         for (Worker w : workers) w.start();
 
         // Esperar a que terminen
-        for (Cliente c : clientes) c.join();
-        cola.cerrar();
-        for (Worker w : workers) w.join();
+        try {
+            for (Cliente c : clientes) c.join();
+            cola.cerrar();
+            for (Worker w : workers) w.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
         // Limpiar
         stats.shutdown();
@@ -70,7 +76,7 @@ public class Main {
 
         System.out.println("\n=== FIN ===");
         System.out.printf("Hilos: %d clientes + %d workers%n", CLIENTES, WORKERS);
-        System.out.printf("Proceso separado: monitor%n");
-        System.out.printf("Sync: Lock+Conditions (cola), Semaphore (almacen)%n");
+        System.out.println("Proceso separado: monitor");
+        System.out.println("Sync: Lock+Conditions (cola), Semaphore (almacen)");
     }
 }
