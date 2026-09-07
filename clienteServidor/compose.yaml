@@ -1,0 +1,14 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cliente-servidor:latest
+    container_name: cliente-servidor
+
+    # El servidor escucha en 4444; se mapea al host para que los clientes
+    # se conecten desde fuera del contenedor (make cliente / java Main client)
+    ports:
+      - "4444:4444"
+
+    restart: "no"
