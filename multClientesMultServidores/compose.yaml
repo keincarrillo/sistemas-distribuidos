@@ -1,0 +1,30 @@
+services:
+  server1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: multi-clientes-servidor:latest
+    container_name: multi-clientes-server1
+    ports:
+      - "4444:4444"
+    restart: "no"
+
+  server2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: multi-clientes-servidor:latest
+    container_name: multi-clientes-server2
+    ports:
+      - "4445:4444"
+    restart: "no"
+
+  server3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: multi-clientes-servidor:latest
+    container_name: multi-clientes-server3
+    ports:
+      - "4446:4444"
+    restart: "no"
