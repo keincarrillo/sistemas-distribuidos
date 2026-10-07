@@ -23,3 +23,18 @@ Evolución de la práctica de sockets enfocada en **varios clientes y un solo se
 clientes (procesos JVM separados) se conectan a la vez contra un único servidor que les atiende con
 un hilo por conexión, respetando un límite de plazas simultáneas con semáforo y reportando
 estadísticas de atendidos y rechazados. Incluye código fuente, contenedor docker y Makefile.
+
+### [multClientesMultServidores](multClientesMultServidores/README.md)
+
+Varios clientes y **varios servidores independientes** con sockets: cada servidor tiene su propio
+puerto, cola, workers y almacén, y un balanceador aleatorio reparte los clientes entre ellos
+(los ids de pedido son únicos dentro de cada servidor). Incluye código fuente, contenedor docker
+y Makefile.
+
+### [objetosDistribuidos](objetosDistribuidos/README.md)
+
+La misma tienda en línea, pero con el modelo de **objetos distribuidos (Java RMI)**: el cliente
+invoca métodos sobre el objeto remoto `Tienda` como si fuera local. Tres servidores independientes
+(cada uno con su registry RMI), balanceador aleatorio con reintento ante caídas y servidores
+llenos, aforo de llamadas remotas simultáneas y estadísticas vía método remoto. Incluye código
+fuente, contenedor docker y Makefile.
