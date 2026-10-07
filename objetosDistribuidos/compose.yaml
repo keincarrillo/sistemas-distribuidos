@@ -1,0 +1,39 @@
+services:
+  server1:
+    image: objetos-distribuidos-servidor:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: objetos-distribuidos-server1
+    command: ["server", "1"]
+    environment:
+      RMI_HOSTNAME: localhost
+    ports:
+      - "4444:4444"
+    restart: "no"
+
+  server2:
+    image: objetos-distribuidos-servidor:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: objetos-distribuidos-server2
+    command: ["server", "2"]
+    environment:
+      RMI_HOSTNAME: localhost
+    ports:
+      - "4445:4445"
+    restart: "no"
+
+  server3:
+    image: objetos-distribuidos-servidor:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: objetos-distribuidos-server3
+    command: ["server", "3"]
+    environment:
+      RMI_HOSTNAME: localhost
+    ports:
+      - "4446:4446"
+    restart: "no"
