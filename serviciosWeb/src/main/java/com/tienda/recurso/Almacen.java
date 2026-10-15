@@ -18,13 +18,14 @@ public class Almacen {
         this.semaforo = new Semaphore(capacidad, true);
     }
 
-    public boolean entrar(String hilo) {
-        boolean ok = semaforo.tryAcquire();
-        if (ok) {
-            System.out.printf("  [%s] entra a %s (%d/%d)%n",
-                    hilo, nombre, semaforo.availablePermits(), capacidad);
-        }
-        return ok;
+    /**
+     * Bloquea hasta conseguir plaza: todo pedido debe pasar por aqui,
+     * no se puede esquivar el almacen. Semaphore justo garantiza orden.
+     */
+    public void entrar(String hilo) throws InterruptedException {
+        semaforo.acquire();
+        System.out.printf("  [%s] entra a %s (%d/%d)%n",
+                hilo, nombre, semaforo.availablePermits(), capacidad);
     }
 
     public void salir(String hilo) {

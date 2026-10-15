@@ -54,12 +54,11 @@ public class Worker extends Thread {
                 System.out.printf("  [%s] procesa pedido#%d (%s) de %s%n",
                         getName(), pedido.getId(), pedido.getProducto(), pedido.getCliente());
 
-                if (almacen.entrar(getName())) {
-                    try {
-                        Thread.sleep(propiedades.getProcesoWorkerMs());
-                    } finally {
-                        almacen.salir(getName());
-                    }
+                almacen.entrar(getName());
+                try {
+                    Thread.sleep(propiedades.getProcesoWorkerMs());
+                } finally {
+                    almacen.salir(getName());
                 }
 
                 total++;
