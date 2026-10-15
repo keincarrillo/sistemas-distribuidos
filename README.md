@@ -38,3 +38,11 @@ invoca métodos sobre el objeto remoto `Tienda` como si fuera local. Tres servid
 (cada uno con su registry RMI), balanceador aleatorio con reintento ante caídas y servidores
 llenos, aforo de llamadas remotas simultáneas y estadísticas vía método remoto. Incluye código
 fuente, contenedor docker y Makefile.
+
+### [serviciosWeb](serviciosWeb/README.md)
+
+La misma tienda en línea, pero como **servicio web REST** con Spring Boot: `POST /api/pedidos`
+recibe un pedido en JSON y devuelve el resultado cuando un worker lo procesa. Mantiene el núcleo
+concurrente (cola acotada, workers, almacén con semáforo, futures) y añade aforo de peticiones
+simultáneas, health check y despliegue en **Render**. Se prueba con Postman o curl. Incluye
+Dockerfile, compose y Makefile.
