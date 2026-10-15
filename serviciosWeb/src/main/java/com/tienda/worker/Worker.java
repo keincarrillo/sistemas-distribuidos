@@ -6,11 +6,15 @@ import com.tienda.config.TiendaProperties;
 import com.tienda.model.Pedido;
 import com.tienda.recurso.Almacen;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Hilo consumidor: toma pedidos de la cola, los procesa (respetando el
  * aforo del almacen) y notifica el resultado a traves del future.
  */
 public class Worker extends Thread {
+
+    private static final AtomicInteger procesados = new AtomicInteger();
 
     private final ColaPedidos cola;
     private final Almacen almacen;
@@ -24,6 +28,10 @@ public class Worker extends Thread {
         this.almacen = almacen;
         this.resultados = resultados;
         this.propiedades = propiedades;
+    }
+
+    public static int getProcesados() {
+        return procesados.get();
     }
 
     @Override
@@ -48,6 +56,7 @@ public class Worker extends Thread {
                 }
 
                 total++;
+                procesados.incrementAndGet();
                 System.out.printf("  [%s] completa pedido#%d%n", getName(), pedido.getId());
                 resultados.completar(pedido, true, System.currentTimeMillis());
             }
