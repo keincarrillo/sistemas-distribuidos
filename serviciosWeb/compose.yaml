@@ -1,0 +1,10 @@
+services:
+  servicios-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: servicios-web:latest
+    container_name: servicios-web
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
