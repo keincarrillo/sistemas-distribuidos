@@ -44,6 +44,13 @@ public class Worker extends Thread {
                     break;
                 }
 
+                // Reclamo atomico: si el cliente cancelo por timeout, lo descarto
+                if (!pedido.tomar()) {
+                    System.out.printf("  [%s] descarta pedido#%d cancelado por el cliente%n",
+                            getName(), pedido.getId());
+                    continue;
+                }
+
                 System.out.printf("  [%s] procesa pedido#%d (%s) de %s%n",
                         getName(), pedido.getId(), pedido.getProducto(), pedido.getCliente());
 

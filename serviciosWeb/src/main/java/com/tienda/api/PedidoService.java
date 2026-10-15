@@ -72,6 +72,8 @@ public class PedidoService {
             try {
                 resultado = futuro.get(propiedades.getTimeoutResultadoMs(), TimeUnit.MILLISECONDS);
             } catch (TimeoutException e) {
+                // Cancelo el pedido: si aun esta en la cola, el worker lo descartara
+                pedido.cancelar();
                 resultados.cancelar(pedido.getId());
                 throw new ProcesoDemoradoException(propiedades.getTimeoutResultadoMs());
             } catch (ExecutionException e) {
