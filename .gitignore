@@ -68,3 +68,8 @@ bin/
 ### Proyecto ###
 # Imágenes descargadas por el programa (se regeneran en cada ejecución)
 descargas/
+
+### Node / PWA ###
+node_modules/
+target/
+pwa/back/src/main/resources/static/
