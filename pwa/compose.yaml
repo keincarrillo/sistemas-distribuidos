@@ -1,0 +1,10 @@
+services:
+  pwa:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: pwa:latest
+    container_name: pwa
+    ports:
+      - "8080:8080"
+    restart: unless-stopped

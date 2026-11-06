@@ -1,0 +1,12 @@
+# Contexto de build = pwa/ (Dockerfile y compose.yaml viven en la raíz)
+frontend/node_modules
+frontend/dist
+back/target
+back/src/main/resources/static
+back/.mvn
+back/mvnw
+back/mvnw.cmd
+back/.idea
+back/*.iml
+**/.DS_Store
+**/*.log
