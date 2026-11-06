@@ -1,0 +1,29 @@
+@use '../abstracts' as *;
+
+body {
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  line-height: $line-height-base;
+  color: $color-text;
+  background: $color-background;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: $font-weight-bold;
+  line-height: 1.25;
+}
+
+h1 {
+  font-size: clamp(1.5rem, 4vw, $font-size-2xl);
+}
+
+h2 {
+  font-size: $font-size-lg;
+}
+
+p {
+  line-height: $line-height-base;
+}

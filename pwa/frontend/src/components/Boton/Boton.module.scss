@@ -1,0 +1,58 @@
+@use 'sass:color';
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  min-height: 44px;
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid transparent;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-base;
+  cursor: pointer;
+  transition:
+    background-color $transition-base,
+    border-color $transition-base,
+    color $transition-base;
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.boton--primario {
+  background: $color-primary;
+  color: $color-surface;
+
+  &:hover:not(:disabled) {
+    background: color.adjust($color-primary, $lightness: -10%);
+  }
+}
+
+.boton--secundario {
+  background: $color-surface;
+  border-color: $color-primary;
+  color: $color-primary;
+
+  &:hover:not(:disabled) {
+    background: rgba($color-primary, 0.08);
+  }
+}
+
+.boton--fantasma {
+  background: transparent;
+  color: $color-text-muted;
+
+  &:hover:not(:disabled) {
+    color: $color-text;
+    background: $color-border;
+  }
+}
+
+.boton__icono {
+  display: inline-flex;
+}

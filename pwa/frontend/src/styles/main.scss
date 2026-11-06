@@ -1,0 +1,6 @@
+// Manifesto principal (arquitectura 7-1): base -> temas.
+// Los componentes usan sus propios `*.module.scss`; aquí solo lo global.
+@use 'base/reset';
+@use 'base/typography';
+@use 'base/base';
+@use 'themes/default';

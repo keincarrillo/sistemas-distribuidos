@@ -1,0 +1,30 @@
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: 2px $spacing-sm;
+  border-radius: $border-radius-pill;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  white-space: nowrap;
+}
+
+.pill--ok {
+  background: rgba($color-success, 0.12);
+  color: $color-success;
+}
+
+.pill--error {
+  background: rgba($color-error, 0.12);
+  color: $color-error;
+}
+
+.pill--aviso {
+  background: rgba($color-warning, 0.14);
+  color: $color-warning;
+}
+
+.pill--neutro {
+  background: $color-border;
+  color: $color-text-muted;
+}

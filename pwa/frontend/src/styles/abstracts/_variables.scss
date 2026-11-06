@@ -1,0 +1,68 @@
+// ------------------------------------------------------------
+// Colores
+// ------------------------------------------------------------
+$color-primary: #1d4ed8;
+$color-primary-light: #3b82f6;
+$color-secondary: #0ea5e9;
+$color-text: #0f172a;
+$color-text-muted: #64748b;
+$color-background: #f8fafc;
+$color-surface: #ffffff;
+$color-border: #e2e8f0;
+$color-success: #16a34a;
+$color-warning: #d97706;
+$color-warning-dark: #b45309;
+$color-error: #dc2626;
+
+// ------------------------------------------------------------
+// Tipografía
+// ------------------------------------------------------------
+$font-family-base:
+  system-ui,
+  -apple-system,
+  'Segoe UI',
+  Roboto,
+  Helvetica,
+  Arial,
+  sans-serif;
+$font-size-sm: 0.875rem;
+$font-size-base: 1rem;
+$font-size-lg: 1.125rem;
+$font-size-xl: 1.5rem;
+$font-size-2xl: 2rem;
+$font-weight-normal: 400;
+$font-weight-bold: 700;
+$line-height-base: 1.5;
+
+// ------------------------------------------------------------
+// Espaciado (escala de 8)
+// ------------------------------------------------------------
+$spacing-unit: 8px;
+$spacing-xs: $spacing-unit * 0.5;
+$spacing-sm: $spacing-unit;
+$spacing-md: $spacing-unit * 2;
+$spacing-lg: $spacing-unit * 3;
+$spacing-xl: $spacing-unit * 4;
+
+// ------------------------------------------------------------
+// Breakpoints (mobile-first)
+// ------------------------------------------------------------
+$breakpoints: (
+  'sm': 576px,
+  'md': 768px,
+  'lg': 992px,
+  'xl': 1200px,
+);
+
+// ------------------------------------------------------------
+// Z-index, transiciones, radios y sombras
+// ------------------------------------------------------------
+$z-index-sticky: 100;
+$z-index-banner: 200;
+$transition-base: 0.2s ease;
+$border-radius-sm: 6px;
+$border-radius-md: 10px;
+$border-radius-lg: 16px;
+$border-radius-pill: 50px;
+$shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+$shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);

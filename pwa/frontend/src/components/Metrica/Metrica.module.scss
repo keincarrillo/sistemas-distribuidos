@@ -1,0 +1,26 @@
+.metrica {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: $spacing-sm;
+  background: $color-background;
+  border-radius: $border-radius-sm;
+}
+
+.metrica__etiqueta {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+}
+
+.metrica__valor {
+  margin: 0;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  font-variant-numeric: tabular-nums;
+}
+
+.metrica__sufijo {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-normal;
+  color: $color-text-muted;
+}

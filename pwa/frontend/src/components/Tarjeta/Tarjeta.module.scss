@@ -1,0 +1,33 @@
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+}
+
+.tarjeta__cabecera {
+  @include flex-between;
+  gap: $spacing-sm;
+  padding: $spacing-md;
+  border-bottom: 1px solid $color-border;
+  background: rgba($color-primary, 0.04);
+}
+
+.tarjeta__titulo {
+  margin: 0;
+  font-size: $font-size-lg;
+}
+
+.tarjeta__accion {
+  display: flex;
+}
+
+.tarjeta__cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  padding: $spacing-md;
+}

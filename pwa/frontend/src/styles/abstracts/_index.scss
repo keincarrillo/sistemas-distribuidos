@@ -1,0 +1,4 @@
+// Barrel de abstracts: se inyecta automáticamente en cada .scss de entrada
+// (vite.config.ts -> css.preprocessorOptions.scss.additionalData).
+@forward 'variables';
+@forward 'mixins';

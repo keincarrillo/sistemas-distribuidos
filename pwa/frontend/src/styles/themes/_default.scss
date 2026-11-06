@@ -1,0 +1,12 @@
+@use '../abstracts' as *;
+
+// Variables a nivel de tema (punto de partida para modo oscuro, etc.).
+:root {
+  --color-primary: #{$color-primary};
+  --color-background: #{$color-background};
+  --color-surface: #{$color-surface};
+  --color-text: #{$color-text};
+  --color-text-muted: #{$color-text-muted};
+  --color-border: #{$color-border};
+  color-scheme: light;
+}

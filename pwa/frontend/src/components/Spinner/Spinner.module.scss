@@ -1,0 +1,32 @@
+.envoltura {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+}
+
+.circulo {
+  width: 18px;
+  height: 18px;
+  border: 2px solid $color-border;
+  border-top-color: $color-primary;
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite;
+}
+
+.texto {
+  font-weight: $font-weight-normal;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .circulo {
+    animation-duration: 2s;
+  }
+}

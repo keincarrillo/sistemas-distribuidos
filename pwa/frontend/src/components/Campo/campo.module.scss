@@ -1,0 +1,36 @@
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.campo__etiqueta {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: $color-text;
+}
+
+.campo__control {
+  width: 100%;
+  min-height: 44px;
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid $color-border;
+  border-radius: $border-radius-sm;
+  background: $color-surface;
+  color: $color-text;
+  font-size: $font-size-base;
+  transition: border-color $transition-base;
+
+  &::placeholder {
+    color: $color-text-muted;
+  }
+}
+
+.campo__control--invalido {
+  border-color: $color-error;
+}
+
+.campo__error {
+  font-size: $font-size-sm;
+  color: $color-error;
+}
