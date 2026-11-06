@@ -46,3 +46,11 @@ recibe un pedido en JSON y devuelve el resultado cuando un worker lo procesa. Ma
 concurrente (cola acotada, workers, almacén con semáforo, futures) y añade aforo de peticiones
 simultáneas, health check y despliegue en **Render**. Se prueba con Postman o curl. Incluye
 Dockerfile, compose y Makefile.
+
+### [pwa](pwa/README.md)
+
+La misma tienda REST convertida en **PWA instalable** (Progressive Web App): `pwa/back/` es una
+copia autónoma del backend de `serviciosWeb` y `pwa/frontend/` añade una interfaz web hecha con
+**React + TypeScript + Vite + Bun** (formulario de pedidos, panel de estado en vivo, manifest +
+service worker con app shell offline y botón de instalación). Con ESLint, Prettier, SCSS,
+Makefiles y Docker multi-etapa (bun + Maven). Es un proyecto independiente de `serviciosWeb/`.
