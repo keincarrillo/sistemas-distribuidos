@@ -1,0 +1,9 @@
+target/
+.mvn/
+mvnw
+mvnw.cmd
+.idea/
+*.iml
+README.md
+Makefile
+compose.yaml
