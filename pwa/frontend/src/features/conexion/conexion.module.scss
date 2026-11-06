@@ -1,0 +1,13 @@
+.banner {
+  position: sticky;
+  top: 0;
+  z-index: $z-index-banner;
+  @include flex-center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background: $color-warning-dark;
+  color: $color-surface;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  text-align: center;
+}

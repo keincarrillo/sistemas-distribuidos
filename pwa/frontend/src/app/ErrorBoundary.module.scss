@@ -1,0 +1,29 @@
+.contenedor {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+  text-align: center;
+}
+
+.titulo {
+  font-size: $font-size-xl;
+}
+
+.texto {
+  color: $color-text-muted;
+}
+
+.boton {
+  min-height: 44px;
+  padding: $spacing-sm $spacing-md;
+  border: none;
+  border-radius: $border-radius-sm;
+  background: $color-primary;
+  color: $color-surface;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+}

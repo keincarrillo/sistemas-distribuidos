@@ -1,0 +1,46 @@
+.resultado {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  border: 1px solid rgba($color-success, 0.45);
+  border-radius: $border-radius-sm;
+  background: rgba($color-success, 0.06);
+}
+
+.resultado__cabecera {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.resultado__icono {
+  flex-shrink: 0;
+  color: $color-success;
+}
+
+.resultado__titulo {
+  margin: 0;
+  font-weight: $font-weight-bold;
+}
+
+.resultado__datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: $spacing-sm;
+  font-size: $font-size-sm;
+
+  dt {
+    color: $color-text-muted;
+  }
+
+  dd {
+    margin: 0;
+    font-weight: $font-weight-bold;
+  }
+}
+
+.resultado__acciones {
+  display: flex;
+  justify-content: flex-end;
+}
